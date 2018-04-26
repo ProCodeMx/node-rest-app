@@ -10,6 +10,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+app.get('/', (req, res) => {
+    res.json({ message: "Welcome to heroku" })
+});
+
 app.get('/users', (req, res) => {
     res.send("hello world")
 });

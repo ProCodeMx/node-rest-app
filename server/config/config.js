@@ -11,7 +11,7 @@ let dbURL;
 if (process.env.NODE_ENV == 'dev') {
     dbURL = 'mongodb://localhost:27017/cafe';
 } else {
-    dbURL = 'mongodb://vicksel:manuel93@ds119688.mlab.com:19688/udemy-nodejs';
+    dbURL = process.env.MONGO_URI;
 }
 
 process.env.MONGOURLDB = dbURL;

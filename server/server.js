@@ -1,37 +1,35 @@
 const express = require('express');
 const app = express();
-//const port = process.env.PORT || 3000;
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const userRoute = require('./routes/users');
+
 require('./config/config');
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
+    // parse application/json
 app.use(bodyParser.json())
+
+// ROUTES
+app.use(userRoute);
 
 app.get('/', (req, res) => {
     res.json({ message: "Welcome to heroku" })
 });
 
-app.get('/users', (req, res) => {
-    res.send("hello world")
+
+
+
+// ================================
+//           CONEXIONES
+// ================================
+mongoose.connect(process.env.MONGOURLDB, (err) => {
+    if (err) throw new Error(`No se pudo conectar a la base de datos`)
+
+    console.log(`Connection Successfull`);
 });
-
-app.post('/users', (req, res) => {
-    let body = req.body;
-
-    res.json({ body })
-});
-
-app.put('/users/:id', (req, res) => {
-    res.json("put users")
-});
-
-app.delete('/users', (req, res) => {
-    res.json("delete users")
-});
-
 
 app.listen(process.env.PORT, () => {
     console.log(`App Listening on port ${process.env.PORT}`);

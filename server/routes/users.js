@@ -30,8 +30,7 @@ app.get('/users', verifyToken, (req, res) => {
 
             res.json({
                 ok: true,
-                users,
-                user: req.user
+                users
             });
         })
 

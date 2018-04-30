@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const userRoute = require('./routes/users');
+
 
 require('./config/config');
 
@@ -13,7 +13,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // ROUTES
-app.use(userRoute);
+app.use(require('./routes/index'));
+
 
 app.get('/', (req, res) => {
     res.json({ message: "Welcome to heroku" })

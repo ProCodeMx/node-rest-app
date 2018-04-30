@@ -51,15 +51,18 @@ const userSchema = new Schema({
     state: {
         type: Boolean,
         default: true,
-        required: false
+        required: false,
+        hide: true
     },
     googleAuth: {
         type: Boolean,
-        default: false
+        default: false,
+        hide: true
     },
     createdAt: {
         type: Date,
-        default: new Moment()
+        default: new Moment(),
+        hide: true
     }
 });
 
@@ -71,7 +74,15 @@ const userSchema = new Schema({
     return userObject;
 }*/
 
+userSchema.pre('save', function(next) {
+    if (this.password) {
+        var salt = bcrypt.genSaltSync(10)
+        this.password = bcrypt.hashSync(this.password, salt)
+    }
+    next()
+});
+
 userSchema.plugin(uniqueValidator, { message: '{PATH} is already in use' });
-userSchema.plugin(mongooseHidden)
+userSchema.plugin(mongooseHidden, { hidden: { _id: false } })
 
 module.exports = mongoose.model('User', userSchema)

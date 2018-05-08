@@ -9,64 +9,47 @@ const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 app.post('/google', async(req, res) => {
-    let token_id = req.body.idtoken;
+    let id_token = req.body.id_token;
 
-    if (!token_id) {
+    if (!id_token) {
         return res.status(400).json({
             ok: false,
             err: {
-                message: "You can't login with normal authentication"
+                message: "You must provide a token"
             }
         })
     }
 
-    let googleUser = await verify(token_id)
+    let googleUser = await verify(id_token)
         .catch((err) => {
-            return res.status(403).json({
+            return res.status(400).json({
                 ok: false,
                 err
             })
         });
 
+
     User.findOne({ email: googleUser.email }, (err, userDB) => {
         if (err) {
-            return res.status(500).json({
+            return res.status(400).json({
+                ok: false,
                 err
             });
         }
-        // Si el email ya existe con login local
-        if (userDB) {
-            if (userDB.google == false) {
-                return res.status(400).json({
-                    err: {
-                        message: "Your email already exists with local login"
-                    }
-                });
-            } else {
-                // Si el usuario ya existe con login google
-                let token = jwt.sign({
-                    user: userDB,
-                }, process.env.TOKEN_SEED, { expiresIn: process.env.TOKEN_EXPIRATION });
 
-                return res.json({
-                    ok: true,
-                    user: userDB,
-                    token
-                })
-            }
-        } else {
-            // Si el usuario no existe en la base de datos
+        //Checar si el usuario no existe en la base de datos
+        if (!userDB) {
             let user = new User({
                 name: googleUser.name,
                 email: googleUser.email,
                 image: googleUser.image,
-                google: googleUser.google,
-                password: '914u1090123'
+                password: '434537767657',
+                googleAuth: true
             });
-            // Lo guardamos en la base de datos
             user.save((err, userDB) => {
                 if (err) {
-                    return res.status(500).json({
+                    return res.status(400).json({
+                        ok: false,
                         err
                     });
                 }
@@ -79,8 +62,30 @@ app.post('/google', async(req, res) => {
                     ok: true,
                     user: userDB,
                     token
-                })
+                });
+            });
+        } else {
+            // Ya existe, verificar si su login es local
+            if (userDB.googleAuth == false) {
+                return res.status(400).json({
+                    ok: false,
+                    err: {
+                        message: "Your account is not linked to google, please link it"
+                    }
+                });
+            }
+
+            // Si su login es googleAuth darle un token
+            let token = jwt.sign({
+                user: userDB,
+            }, process.env.TOKEN_SEED, { expiresIn: process.env.TOKEN_EXPIRATION });
+
+            return res.json({
+                ok: true,
+                user: userDB,
+                token
             })
+
         }
     });
 
@@ -97,7 +102,7 @@ async function verify(token) {
         name: payload.name,
         email: payload.email,
         image: payload.picture,
-        google: true
+        googleAuth: true
     };
 }
 

@@ -56,7 +56,7 @@ app.post('/users', [verifyToken, isAdmin], (req, res) => {
             });
         }
 
-        return res.json({
+        return res.status(201).json({
             ok: true,
             user: userDB
         });

@@ -27,6 +27,7 @@ const userSchema = new Schema({
         type: String,
         unique: [true, 'Email is already in use'],
         trim: true,
+        index: true,
         lowercase: true,
         required: [true, 'Email is required'],
         validate: [validateEmail, '{VALUE} is not a valid email address'],

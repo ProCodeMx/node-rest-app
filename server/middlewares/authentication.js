@@ -19,8 +19,28 @@ let verifyToken = (req, res, next) => {
     });
 }
 
-//ROL DE ADMINISTRADOR
+// Verify token for image
+let verifyTokenImg = (req, res, next) => {
+    let token = req.query.token;
 
+
+    jwt.verify(token, process.env.TOKEN_SEED, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                err: {
+                    message: 'Invalid token'
+                }
+            })
+        }
+
+        req.user = decoded.user;
+        next()
+    });
+}
+
+
+//ROL DE ADMINISTRADOR
 let isAdmin = (req, res, next) => {
     let user = req.user;
 
@@ -39,5 +59,6 @@ let isAdmin = (req, res, next) => {
 
 module.exports = {
     verifyToken,
-    isAdmin
+    isAdmin,
+    verifyTokenImg
 };

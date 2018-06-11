@@ -6,7 +6,7 @@ const _ = require('underscore');
 const { verifyToken, isAdmin } = require('../middlewares/authentication');
 
 
-app.get('/products/search/:term', verifyToken, (req, res) => {
+app.get('/search/:term', verifyToken, (req, res) => {
     let term = req.params.term;
     let regex = new RegExp(term, 'i');
 
@@ -28,7 +28,7 @@ app.get('/products/search/:term', verifyToken, (req, res) => {
     });
 });
 
-app.get('/products', verifyToken, (req, res) => {
+app.get('/', verifyToken, (req, res) => {
 
     let from = req.query.from || 0;
     from = Number(from);
@@ -62,7 +62,7 @@ app.get('/products', verifyToken, (req, res) => {
 });
 
 
-app.post('/products', verifyToken, async(req, res) => {
+app.post('/', verifyToken, async(req, res) => {
     let body = req.body;
     let user = req.user._id;
 

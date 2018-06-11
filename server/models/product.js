@@ -31,7 +31,12 @@ const productSchema = new Schema({
     category: {
         type: Schema.Types.ObjectId,
         ref: 'Category'
-    }
+    },
+    image: {
+        type: String,
+        required: false,
+        default: 'https://www.kpfinder.com/assets/default_product.jpg'
+    },
 }, { timestamps: true });
 
 

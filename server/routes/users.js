@@ -8,7 +8,7 @@ require('mongoose-pagination');
 const { verifyToken, isAdmin } = require('../middlewares/authentication');
 
 
-app.get('/users', verifyToken, (req, res) => {
+app.get('/', verifyToken, (req, res) => {
 
     let from = req.query.from || 0;
     from = Number(from);
@@ -38,7 +38,7 @@ app.get('/users', verifyToken, (req, res) => {
 
 
 
-app.post('/users', [verifyToken, isAdmin], (req, res) => {
+app.post('/', [verifyToken, isAdmin], (req, res) => {
     let body = req.body;
 
     let user = new User({
@@ -64,7 +64,7 @@ app.post('/users', [verifyToken, isAdmin], (req, res) => {
 
 });
 
-app.put('/users/:id', [verifyToken, isAdmin], (req, res) => {
+app.put('/:id', [verifyToken], (req, res) => {
     let userID = req.params.id;
     let body = _.pick(req.body, ['name',
         'email',
@@ -72,7 +72,7 @@ app.put('/users/:id', [verifyToken, isAdmin], (req, res) => {
         'state'
     ]);
 
-    User.findByIdAndUpdate(userID, body, { new: true, runValidators: true }, (err, userDB) => {
+    User.findByIdAndUpdate(userID, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -99,7 +99,7 @@ app.put('/users/:id', [verifyToken, isAdmin], (req, res) => {
 });
 
 
-app.delete('/users/:id', [verifyToken, isAdmin], (req, res) => {
+app.delete('/:id', [verifyToken, isAdmin], (req, res) => {
     let userID = req.params.id;
 
     User.findByIdAndUpdate(userID, { state: false }, { new: true }, (err, userDB) => {
